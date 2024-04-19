@@ -1,9 +1,20 @@
 const mongoose = require("mongoose");
+const User = require("./userModel");
 
 const articleSchema = new mongoose.Schema({
 	title: { type: String, required: [true, "Title is required"], unique: true },
 	description: { type: String },
-	author: { type: String },
+	author: {
+		type: {
+			first_name: String,
+			last_name: String,
+			user_id: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User",
+			},
+		},
+		required: true,
+	},
 	state: {
 		type: String,
 		enum: ["draft", "published"],
@@ -35,4 +46,5 @@ articleSchema.pre("save", function (next) {
 	next();
 });
 
-module.exports = mongoose.model("Article", articleSchema);
+const Article = mongoose.model("Article", articleSchema);
+module.exports = Article;
