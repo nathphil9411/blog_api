@@ -5,11 +5,40 @@ class APIFeatures {
 	}
 	filter() {
 		const queryObj = { ...this.queryString };
-		const excludedField = ["page", "sort", "limit", "fields"];
+		const excludedField = ["page", "sort", "limit", "fields", "tag"];
 		excludedField.forEach((el) => delete queryObj[el]);
-		this.query = this.query.find(queryObj);
+		const isAuthenticated = this.queryString.isAuthenticated;
+
+		if (isAuthenticated) {
+			this.query = this.query.find({
+				$or: [{ state: "publish" }, { state: "draft" }],
+				author: this.queryString.author,
+			});
+			if (this.queryString.state === "draft") {
+				this.query = this.query.find({
+					state: "draft",
+					author: this.queryString.author,
+				});
+			}
+			if (this.queryString.state === "publish") {
+				this.query = this.query.find({
+					state: "publish",
+					author: this.queryString.author,
+				});
+			}
+		} else {
+			this.query = this.query.find({ state: "publish" });
+		}
 		return this;
 	}
+	searchTag() {
+		if (this.queryString.tag) {
+			const searchByTag = this.queryString.tag;
+			this.query.find({ tags: { $in: [searchByTag] } });
+		}
+		return this;
+	}
+
 	sort() {
 		if (this.queryString.sort) {
 			const sortBy = this.queryString.sort.split(",").join(" ");
@@ -30,7 +59,7 @@ class APIFeatures {
 	}
 	paginate() {
 		const page = this.queryString.page * 1 || 1;
-		const limit = this.queryString.limit * 1 || 10;
+		const limit = this.queryString.limit * 1 || 20;
 		const skip = (page - 1) * limit;
 		this.query = this.query.skip(skip).limit(limit);
 		return this;

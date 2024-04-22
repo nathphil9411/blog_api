@@ -1,31 +1,30 @@
 const mongoose = require("mongoose");
 const User = require("./userModel");
 
-const articleSchema = new mongoose.Schema({
-	title: { type: String, required: [true, "Title is required"], unique: true },
-	description: { type: String },
-	author: {
-		type: {
-			first_name: String,
-			last_name: String,
-			user_id: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "User",
-			},
+const articleSchema = new mongoose.Schema(
+	{
+		title: {
+			type: String,
+			required: [true, "Title is required"],
+			unique: true,
 		},
-		required: true,
+		description: { type: String },
+		author: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+		},
+		state: {
+			type: String,
+			enum: ["draft", "publish"],
+			default: "draft",
+		},
+		read_count: { type: Number, default: 0 },
+		reading_time: { type: Number },
+		tags: [{ type: String }],
+		body: { type: String, required: [true, "Body is required"] },
 	},
-	state: {
-		type: String,
-		enum: ["draft", "published"],
-		default: "draft",
-	},
-	read_count: { type: Number, default: 0 },
-	reading_time: { type: Number },
-	tags: [{ type: String }],
-	body: { type: String, required: [true, "Body is required"] },
-	timestamp: { type: Date, default: Date.now },
-});
+	{ timestamps: true }
+);
 
 //Method to increment the read count
 articleSchema.methods.incrementReadCount = function () {
@@ -35,8 +34,7 @@ articleSchema.methods.incrementReadCount = function () {
 //method to check published state & read time
 articleSchema.pre("save", function (next) {
 	if (this.isModified("state")) {
-		if (this.state === "published") {
-			this.timestamp = new Date();
+		if (this.state === "publish") {
 			//Average reading speed of 200 words per minute will be used
 			const wordsPerMinute = 200;
 			const words = this.body.split(" ").length;

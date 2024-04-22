@@ -4,7 +4,7 @@
 	"description": "A blog api that can read, update and create new articles",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "jest --detectOpenHandles --testTimeout=10000 --forceExit",
 		"start": " nodemon server.js",
 		"debug": "ndb server.js",
 		"start:prod": "NODE_ENV=production nodemon server.js"
@@ -17,6 +17,8 @@
 	"license": "MIT",
 	"dependencies": {
 		"bcryptjs": "^2.4.3",
+		"cookie-parser": "^1.4.6",
+		"cross-env": "^7.0.3",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"jsonwebtoken": "^9.0.2",
@@ -27,6 +29,8 @@
 		"winston": "^3.13.0"
 	},
 	"devDependencies": {
-		"nodemon": "^3.1.0"
+		"jest": "^29.7.0",
+		"nodemon": "^3.1.0",
+		"supertest": "^6.3.4"
 	}
 }

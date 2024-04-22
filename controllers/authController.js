@@ -16,10 +16,11 @@ const signUp = catchAsync(async (req, res, next) => {
 	const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
+
 	res.status(201).json({
 		status: "success",
 		token,
-		data: { newUser },
+		data: { message: "Create post with the token" },
 	});
 });
 
@@ -29,7 +30,7 @@ const signIn = catchAsync(async (req, res, next) => {
 		return next(new AppError("Input an email or password", 400));
 	}
 	email.toLowerCase().trim();
-	const user = await User.findOne({ email: email });
+	const user = await User.findOne({ email: email }).select("+password");
 	if (!user) {
 		return next(new AppError("Invalid email", 401));
 	}
@@ -38,13 +39,27 @@ const signIn = catchAsync(async (req, res, next) => {
 		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
 			expiresIn: process.env.JWT_EXPIRES_IN,
 		});
+		res.cookie("token", token, {
+			path: "/",
+			secure: true,
+			httpOnly: true,
+			sameSite: "None",
+		});
 		res.status(200).json({
 			status: "success",
-			token,
+
+			data: { token: token },
 		});
 	} else {
 		return next(new AppError("wrong password", 401));
 	}
 });
+const signOut = (req, res) => {
+	res.clearCookie("token");
+	res.status(200).json({
+		status: "success",
+		message: "Successfully signed out",
+	});
+};
 
-module.exports = { signUp, signIn };
+module.exports = { signUp, signIn, signOut };

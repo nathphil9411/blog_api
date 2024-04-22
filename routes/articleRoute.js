@@ -7,6 +7,14 @@ router
 	.route("/")
 	.get(articleController.getAllArticles)
 	.post(authMiddleware, articleController.createArticle);
+router.get(
+	"/my-articles",
+	authMiddleware,
+	articleController.getMyArticles,
+	articleController.getAllArticles
+);
+
+router.patch("/publish/:id", authMiddleware, articleController.publishArticle);
 
 router
 	.route("/:id")
