@@ -61,9 +61,6 @@ The API includes the following endpoints:
 - [MongoDB Official Documentation](https://docs.mongodb.com/): Learn more about MongoDB and how to set it up.
 - [Mongoose Official Documentation](https://mongoosejs.com/docs/): Explore the features and functionalities of Mongoose for MongoDB.
 - [Express.js Official Documentation](https://expressjs.com/): Refer to the Express.js documentation for information on building web applications with Node.js.
-
-## Share Your Progress
-
-Quite an Insigthful second semester exam for altSchool Africa.
+.
 
 Happy coding!
