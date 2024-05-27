@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const limiter = require("./utils/rateLimit");
 const cookieParser = require("cookie-parser");
 const articleRouter = require("./routes/articleRoute");
 const userRouter = require("./routes/userRoute");
@@ -11,6 +12,7 @@ const globalError = require("./controllers/errorController");
 
 //midlewares
 
+app.use(limiter);
 app.use(express.json());
 if (process.env.NODE_ENV === "development") {
 	app.use(morgan("dev"));
